@@ -1,0 +1,11 @@
+{
+    "extends": ["plugin:jest/all", "standard"],
+    "plugins": ["jest"],
+    "env": {
+        "jest/globals": true
+    },
+    "rules": {
+        "complexity": ["error", {"max":  5}],
+        "jest/prefer-expect-assertions": "off"
+    }
+}
