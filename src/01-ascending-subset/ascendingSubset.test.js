@@ -1,5 +1,5 @@
 /* eslint-env jest */
-const { getGreaterAscendingSubset } = require('./ascendingSubset')
+const getGreaterAscendingSubset = require('./ascendingSubset')
 
 describe('01. - getGreaterAscendingSubset', () => {
   it('returns empty array on empty input', () => {

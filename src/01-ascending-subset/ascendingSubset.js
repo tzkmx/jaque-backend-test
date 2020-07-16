@@ -9,7 +9,7 @@
  * @param {number[]} numbers array of numbers to scan
  * @returns {number[]}
  */
-export function getGreaterAscendingSubset (numbers) {
+module.exports = function getGreaterAscendingSubset (numbers) {
   if (numbers.length <= 1) {
     return numbers
   }
