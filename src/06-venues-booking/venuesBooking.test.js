@@ -16,4 +16,15 @@ describe('06. - getNumOfVenuesRequired', () => {
     ]
     )).toStrictEqual(expectRequiredClassRooms)
   })
+
+  it('books only one classroom if previous class ends at next start time', () => {
+    const expectRequiredClassRooms = 1
+
+    expect(getNumOfVenuesRequired([
+      { start: '09:00', end: '11:00' },
+      { start: '11:00', end: '14:00' },
+      { start: '14:00', end: '16:00' }
+    ]
+    )).toStrictEqual(expectRequiredClassRooms)
+  })
 })
