@@ -5,6 +5,12 @@
  * @property {string} start initial Time for interval
  * @property {string} end ending Time for booking
  */
+/**
+ * @inner
+ * @typedef {Object} BookingRange
+ * @property {Date} start
+ * @property {Date} end
+ */
 
 /**
  * Allows knowing the number of required classrooms for requested schedule.
@@ -53,7 +59,7 @@ class VenuesBooking {
   /**
    * Register an interval for class and requests new classroom if needed.
    *
-   * @param {RequiredInterval} schedule
+   * @param {BookingRange} schedule
    */
   bookClass (schedule) {
     if (this.requiredClassRooms() === 0) {
@@ -70,7 +76,7 @@ class VenuesBooking {
   /**
    * Books first classroom and class.
    *
-   * @param {RequiredInterval} schedule
+   * @param {BookingRange} schedule
    * @param {number} [roomNumber]
    */
   bookClassAtRoom (schedule, roomNumber) {
@@ -85,16 +91,9 @@ class VenuesBooking {
 class ClassRoomBooking {
   constructor () {
     /**
-     * @typedef {Object} BookingRange
-     * @property {Date} start
-     * @property {Date} end
+     * @type {BookingRange[]}
      */
-
-    /**
-     * @protected registered periods for this classroom
-     * @type {Set<{BookingRange}>}
-     */
-    this.bookings = new Set()
+    this.bookings = []
   }
 
   /**
@@ -105,11 +104,12 @@ class ClassRoomBooking {
   attemptBookPeriod (schedule) {
     const { start, end } = schedule
 
-    if (!this.isAvailable(start, end)) {
-      return false
+    if (this.isAvailable(start, end)) {
+      this.bookings.push({ start, end })
+      return true
     }
 
-    this.bookings.add({ start, end })
+    return false
   }
 
   /**
@@ -120,11 +120,16 @@ class ClassRoomBooking {
    * @return {boolean} classroom is available at required interval
    */
   isAvailable (startTime, endTime) {
+    if (this.bookings.length === 0) return true
     for (const booking of this.bookings) {
-      if (this.startsWithinBooking(booking, startTime) ||
-        this.endsWithinBooking(booking, endTime)) return false
+      const startsWithin = this.startsWithinBooking(booking, startTime)
+      const endsWithin = this.endsWithinBooking(booking, endTime)
+
+      if (!(startsWithin || endsWithin)) {
+        return true
+      }
     }
-    return true
+    return false
   }
 
   /**
@@ -167,6 +172,6 @@ function convertToDate (scheduleLimit) {
 
   const date = new Date()
   const [hours, minutes] = scheduleLimit.split(':')
-  date.setHours(hours, minutes)
+  date.setHours(hours, minutes, 0, 0)
   return date
 }
