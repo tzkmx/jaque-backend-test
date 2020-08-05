@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node src/demo-twilio/main.js",	  
     "doc": "rm -rf docs && jsdoc -r src -d docs/ --readme README.md",
     "test": "jest",
     "test:watch": "jest --watch"
