@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Demo chat Twilio</title>
+    <script src="https://media.twiliocdn.com/sdk/js/chat/v4.0/twilio-chat.min.js"></script>
+</head>
+<body>
+<label>Ingresa tu nombre de usuario</label>
+<input type="text" id="userinput"/>
+
+<div id="token"></div>
+<script>
+/**
+ * Gets twilio access token for user, issued by service account.
+ *
+ * @param {string} username to include as identity
+ * @param {function} handler receiving the token received by response
+ */
+function fetchAccessToken(username, handler) {
+    const data = JSON.stringify({identity: username})
+    fetch('/token', {
+      method: 'POST',
+      body: data,
+      'Content-Type': 'application/json'
+    })
+      .then(res => res.json())
+      .then(res => handler(res.token))
+      .catch(console.warn)
+}
+
+function receiveToken(token) {
+  console.log(token)
+  const output = document.getElementById('token')
+  output.innerText = JSON.stringify(token)
+}
+
+{
+  const inputEl = document.getElementById('userinput')
+
+  inputEl.addEventListener('keyup', (ev) => {
+    const { keyCode } = ev
+    if (keyCode === 13) {
+      const username = inputEl.value
+      fetchAccessToken(username, receiveToken)
+    }
+  })
+}
+
+</script>
+</body>
+</html>

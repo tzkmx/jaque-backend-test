@@ -3,14 +3,15 @@ const express = require('express')
 const app = express()
 const port = 3000
 app.use(express.json())
+app.use(express.static('public'))
 
 const { generateToken } = require('./generateToken')
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('<a href="chat.html">Demo chat</a>')
 })
 
-app.post('/', function (req, res) {
+app.post('/token', function (req, res) {
   const { identity } = req.body
   const token = generateToken(identity)
 
