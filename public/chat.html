@@ -11,6 +11,10 @@
 
 <div id="token"></div>
 <script>
+/** @type Client */
+let messagingClient
+
+let channelsList = []
 /**
  * Gets twilio access token for user, issued by service account.
  *
@@ -22,7 +26,9 @@ function fetchAccessToken(username, handler) {
     fetch('/token', {
       method: 'POST',
       body: data,
-      'Content-Type': 'application/json'
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
       .then(res => res.json())
       .then(res => handler(res.token))
@@ -35,6 +41,34 @@ function receiveToken(token) {
   output.innerText = JSON.stringify(token)
 }
 
+function connectMessagingClient(token) {
+  console.log('received token', { token })
+  Twilio.Chat.Client.create(token)
+    .then(function (client) {
+      messagingClient = client
+      console.log({ client, messagingClient })
+      messagingClient.on('channelAdded', loadChannelsList)
+    })
+    .catch(err => { console.warn(err) })
+}
+
+function loadChannelsList() {
+  /*
+  not a good idea, keeps creating channels
+
+  messagingClient.createChannel({
+    attributes: { test: true, jesuso: 'yeah' },
+    friendlyName: 'soporte',
+    isPrivate: true
+  })
+
+  */
+  messagingClient.getPublicChannelDescriptors()
+    .then(function (channels) {
+      console.log(channels)
+    })
+}
+
 {
   const inputEl = document.getElementById('userinput')
 
@@ -42,7 +76,7 @@ function receiveToken(token) {
     const { keyCode } = ev
     if (keyCode === 13) {
       const username = inputEl.value
-      fetchAccessToken(username, receiveToken)
+      fetchAccessToken(username, connectMessagingClient)
     }
   })
 }
